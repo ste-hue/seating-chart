@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Seating Chart</title>
+<style>
+  :root {
+    --bg: #fbf8f3;
+    --ink: #2b2b2b;
+    --muted: #888;
+    --line: #cfcfcf;
+    --table-fill: #d9d9d9;
+    --seat-size: 60px;
+    --gap: 0px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    padding: 48px 24px;
+    min-height: 100vh;
+  }
+
+  .chart-scroll {
+    overflow-x: auto;
+    width: 100%;
+  }
+
+  .chart {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 56px;
+    align-items: stretch;
+    width: max-content;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 0 0 auto;
+  }
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap);
+  }
+
+  .seat {
+    width: var(--seat-size);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .circle {
+    width: var(--seat-size);
+    height: var(--seat-size);
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6px;
+    font-size: 9px;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+
+  .circle.empty {
+    border-style: dashed;
+    border-color: #e2e2e2;
+  }
+
+  .num {
+    font-size: 9px;
+    color: var(--muted);
+    margin-top: 4px;
+    height: 12px;
+  }
+
+  .script {
+    font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+    font-size: 18px;
+    font-style: italic;
+  }
+
+  .tablebar {
+    width: 100%;
+    height: 67px;
+    background: var(--table-fill);
+    border-radius: 8px;
+    margin: 2px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
+
+  h1 {
+    text-align: center;
+    font-weight: 300;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .subtitle {
+    text-align: center;
+    font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", cursive;
+    font-size: 36px;
+    color: var(--ink);
+    margin-bottom: 40px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Seating Chart</h1>
+<div class="subtitle">Groom &amp; Bride</div>
+
+<div class="chart-scroll">
+  <div class="chart" id="chart"></div>
+</div>
+
+<script>
+  const tables = [
+    {
+      label: "Table 1",
+      top: [
+        { n: 0,  name: "" },
+        { n: 1,  name: "Zio Peppe" },
+        { n: 2,  name: "Zio Sabrina" },
+        { n: 3,  name: "Zia Paola" },
+        { n: 4,  name: "Raimondo" },
+        { n: 5,  name: "Marco V" },
+        { n: 6,  name: "Zia Marianna" },
+        { n: 7,  name: "Matteo De Robertis" },
+        { n: 8,  name: "Valentina" },
+        { n: 9,  name: "Marco DP" },
+        { n: 10, name: "Gino C" },
+      ],
+      bot: [
+        { n: 32, name: "Zio Giorgio" },
+        { n: 33, name: "Gianni Vuilleumier" },
+        { n: 34, name: "Jasmine Vuilleumier" },
+        { n: 35, name: "Luigi" },
+        { n: 36, name: "Antonio" },
+        { n: 37, name: "Tina" },
+        { n: 38, name: "Nicola Pallottini" },
+        { n: 39, name: "Marina" },
+        { n: 40, name: "Giulio" },
+        { n: 41, name: "Ilaria" },
+        { n: 42, name: "Sara" },
+      ],
+    },
+    {
+      label: "Table 2",
+      top: [
+        { n: 11, name: "Marisella C" },
+        { n: 12, name: "Stefano Sr." },
+        { n: 13, name: "Nora" },
+        { n: 14, name: "Groom", script: true },
+        { n: 15, name: "Bride", script: true },
+        { n: 16, name: "Persia W" },
+        { n: 17, name: "Peter" },
+        { n: 18, name: "Claudia" },
+        { n: 19, name: "Max" },
+        { n: 20, name: "Doerthe" },
+        { n: 21, name: "Dave B" },
+      ],
+      bot: [
+        { n: 43, name: "Leo" },
+        { n: 44, name: "Guiseppe DP" },
+        { n: 45, name: "Zia Anna" },
+        { n: 46, name: "Jordan W" },
+        { n: 47, name: "Sophie" },
+        { n: 48, name: "Paul" },
+        { n: 49, name: "Chiara" },
+        { n: 50, name: "Kat" },
+        { n: 51, name: "Adam" },
+        { n: 52, name: "Ryan W" },
+        { n: "", name: "" },
+      ],
+    },
+    {
+      label: "Table 3",
+      top: [
+        { n: 22, name: "Katie M" },
+        { n: 23, name: "Amanda A." },
+        { n: 24, name: "Rishi" },
+        { n: 25, name: "David Personne" },
+        { n: 26, name: "Chrystal" },
+        { n: 27, name: "Neyssan" },
+        { n: 28, name: "Jacques S" },
+        { n: 29, name: "Camila C" },
+        { n: 30, name: "Sam T" },
+        { n: 31, name: "Bre D" },
+        { n: "", name: "" },
+      ],
+      bot: [
+        { n: 53, name: "Brittani W" },
+        { n: 54, name: "Dave" },
+        { n: 55, name: "Amber" },
+        { n: 56, name: "George T" },
+        { n: 57, name: "Guiseppe DL" },
+        { n: 58, name: "Lauren DL" },
+        { n: 59, name: "Ryan B" },
+        { n: 60, name: "Tyler B" },
+        { n: 61, name: "Ben H" },
+        { n: 62, name: "Eamon W" },
+        { n: 63, name: "Keely W" },
+      ],
+    },
+  ];
+
+  function seat(s) {
+    const el = document.createElement("div");
+    el.className = "seat";
+    const empty = !s.name;
+    el.innerHTML = `
+      <div class="circle${empty ? " empty" : ""}${s.script ? " script" : ""}">${s.name || ""}</div>
+      <div class="num">${s.n !== "" ? s.n : ""}</div>
+    `;
+    return el;
+  }
+
+  function buildTable(t) {
+    const wrap = document.createElement("div");
+    wrap.className = "table";
+
+    const top = document.createElement("div");
+    top.className = "row";
+    t.top.forEach(s => top.appendChild(seat(s)));
+
+    const bar = document.createElement("div");
+    bar.className = "tablebar";
+    bar.textContent = t.label;
+
+    const bot = document.createElement("div");
+    bot.className = "row";
+    t.bot.forEach(s => bot.appendChild(seat(s)));
+
+    wrap.append(top, bar, bot);
+    return wrap;
+  }
+
+  const chart = document.getElementById("chart");
+  tables.forEach(t => chart.appendChild(buildTable(t)));
+</script>
+
+</body>
+</html>
